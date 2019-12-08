@@ -13,6 +13,7 @@ module.exports = {
         path: `${__dirname}/src/stash`
       }
     },
+    'gatsby-transformer-xml',
     'gatsby-transformer-sharp',
     'gatsby-plugin-sharp',
     {
