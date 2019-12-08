@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "stash-formatter",
   "private": true,
   "description": "Formats a Juice Calculator stash XML as a web page",
   "version": "0.1.0",
