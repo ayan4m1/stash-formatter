@@ -9,9 +9,9 @@ export default class Flavors extends Component {
       <Table striped hover>
         <thead>
           <tr>
-            <th>Vendor</th>
             <th>Flavor</th>
-            <th>Volume</th>
+            <th>Brand</th>
+            <th>Vendor</th>
           </tr>
         </thead>
         <tbody>
@@ -29,6 +29,10 @@ export default class Flavors extends Component {
                         children {
                           name
                           content
+                          children {
+                            name
+                            content
+                          }
                         }
                       }
                     }
@@ -46,23 +50,46 @@ export default class Flavors extends Component {
               const transformedIngredients = ingredients.map(ingredient => {
                 const properties = [];
 
-                for (const {
-                  name: key,
-                  content: value
-                } of ingredient.children) {
-                  properties.push([key, value]);
+                for (const child of ingredient.children) {
+                  if (child.name === 'ManEntry') {
+                    const nameItem = child.children.find(
+                      item => item.name === 'Name'
+                    );
+
+                    if (nameItem) {
+                      properties.push(['Manufacturer', nameItem.content]);
+                    }
+                  } else {
+                    properties.push([child.name, child.content]);
+                  }
                 }
 
                 return fromPairs(properties);
               });
 
-              return transformedIngredients.map(ingredient => (
+              const sortedFlavors = transformedIngredients
+                .filter(
+                  ingredient =>
+                    ingredient.IngredientType === 'Flavor' &&
+                    parseInt(ingredient.AmountInInventory, 10) !== 0
+                )
+                .sort((a, b) => {
+                  const compare = a.Name.localeCompare(b.Name);
+
+                  if (compare !== 0) {
+                    return compare;
+                  }
+
+                  return a.Manufacturer.localeCompare(b.Manufacturer);
+                });
+
+              return sortedFlavors.map(flavor => (
                 <tr
-                  key={`${ingredient.IngredientType}${ingredient.Vendor}${ingredient.Name}`}
+                  key={`${flavor.Name}${flavor.Manufacturer}${flavor.Vendor}`}
                 >
-                  <td>{ingredient.Vendor}</td>
-                  <td>{ingredient.Name}</td>
-                  <td>{ingredient.AmountInInventory} ml</td>
+                  <td>{flavor.Name}</td>
+                  <td>{flavor.Manufacturer}</td>
+                  <td>{flavor.Vendor}</td>
                 </tr>
               ));
             }}
